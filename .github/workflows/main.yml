@@ -34,17 +34,26 @@ jobs:
 
       - name: Log in to GitHub container registry
         uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
 
-      - name: Lowercase the repo name and username
-        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-
-      - name: Build and push container image to registry
-        uses: docker/build-push-action@v3
+      - uses: pmorelli92/github-container-registry-build-push@2.0.0
+        name: Build and Publish the latest service image
         with:
-          push: true
-          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
-          file: ./Dockerfile
+          github-push-secret: ${{secrets.GITHUB_TOKEN}}
+          docker-image-name: my-svc
+          docker-image-tag: latest # optional
+          dockerfile-path: ./Dockerfile # optional          
+          build-only: false # optional
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ github.token }}
+
+      # - name: Lowercase the repo name and username
+      #   run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
+      # - name: Build and push container image to registry
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     push: true
+      #     tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
+      #     file: ./Dockerfile
